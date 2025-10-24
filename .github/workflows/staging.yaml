@@ -153,6 +153,7 @@ jobs:
           cd  ~/argocd
 
           kubectl apply -f manifest/secrets.application.yaml -n argocd
+          kubectl apply -f  project/secrets.yaml -n argocd
           # wait for sealed-secret-controller to properly decrept the secret
           sleep 30
 
@@ -166,6 +167,17 @@ jobs:
           kubectl apply -f  manifest/web.application.yaml -n argocd
           kubectl apply -f  manifest/collecter.application.yaml -n argocd
           kubectl apply -f  manifest/converter.application.yaml -n argocd
+
+          kubectl apply -f  project/ingress.yaml -n argocd
+          kubectl apply -f  project/nats.yaml -n argocd
+          kubectl apply -f  project/rabbitmq.yaml -n argocd
+          kubectl apply -f  project/shortner-analytics.yaml -n argocd
+          kubectl apply -f  project/shortner-api.yaml -n argocd
+          kubectl apply -f  project/shortner-collector.yaml -n argocd
+          kubectl apply -f  project/shortner-web.yaml -n argocd
+          kubectl apply -f  project/shortner-ws.yaml -n argocd
+          kubectl apply -f  project/shortner.yaml -n argocd
+
 
 
 
