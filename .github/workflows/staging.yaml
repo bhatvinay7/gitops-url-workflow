@@ -42,15 +42,12 @@ jobs:
 
       - name: Install rabbitMq cluster operater
         run: |
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm upgrade --install rabbitmq-operator bitnami/rabbitmq-cluster-operator \
-          -n shortner --create-namespace
+            kubectl apply -f https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml -n shortner
 
-      - name: Install nats cluster rabbitmq-operator
+      - name: Install nats cluster
         run: |
           helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-          helm upgrade --install nats-operator nats/nats-operator -n shortner
-
+          helm upgrade --install nats nats/nats -n shortner
 
       - name: Install ArgoCD and Add gitops to ArgoCD
         run: |
@@ -96,7 +93,7 @@ jobs:
 
       - name: Install ArgoCD CLI and agrocd
         run: |
-          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.1.8/manifests/ha/install.yaml
+          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v3.1.9/manifests/ha/install.yaml
           curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           chmod +x argocd
           sudo mv argocd /usr/local/bin/
