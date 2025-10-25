@@ -92,6 +92,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y git
           mkdir -p ~/manifests
           git clone --branch $GITOPS_BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$GITOPS_REPO.git  ~/manifests
+          ls -R ~/manifests
           cd ~/manifests
           helm template short  services/url-analytics   --values services/url-analytics/values.staging.yml > analytics.yaml
           helm template short  services/url-data-collector   --values services/url-data-collector/values.staging.yml > data-collector.yaml
