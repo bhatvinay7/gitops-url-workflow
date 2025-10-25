@@ -92,13 +92,14 @@ jobs:
           sudo apt-get update && sudo apt-get install -y git
           mkdir -p ~/manifests
           git clone --branch $GITOPS_BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$GITOPS_REPO.git  ~/manifests
-
-          helm template short  ~/manifests/services/url-analytics   --values ~/manifests/services/url-analytics/values.staging.yml > ~/manifests/analytics.yaml
-          helm template short  ~/manifests/services/url-data-collector   --values ~/manifests/services/url-data-collector/values.staging.yml > ~/manifests/data-collector.yaml
-          helm template short  ~/manifests/services/url-http-server   --values ~/manifests/services/url-http-server/values.staging.yml > ~/manifests/http-server.yaml
-          helm template short  ~/manifests/services/url-converter   --values ~/manifests/services/url-converter/values.staging.yml > ~/manifests/converter.yaml
-          helm template short  ~/manifests/services/url-ws-server   --values ~/manifests/services/url-ws-server/values.staging.yml > ~/manifests/ws.yaml
-          helm template short  ~/manifests/services/url-web   --values ~/manifests/services/url-web/values.staging.yml > ~/manifestsweb.yaml
+          cd ~/manifests
+          helm version
+          helm template short  services/url-analytics   --values services/url-analytics/values.staging.yml > analytics.yaml
+          helm template short  services/url-data-collector   --values services/url-data-collector/values.staging.yml > data-collector.yaml
+          helm template short  services/url-http-server   --values services/url-http-server/values.staging.yml > http-server.yaml
+          helm template short  services/url-converter   --values services/url-converter/values.staging.yml > converter.yaml
+          helm template short  services/url-ws-server   --values services/url-ws-server/values.staging.yml > ws.yaml
+          helm template short  services/url-web   --values services/url-web/values.staging.yml > ~/manifestsweb.yaml
 
         
       - name: Commit and Push Changes
