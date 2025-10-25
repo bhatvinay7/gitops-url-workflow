@@ -109,7 +109,7 @@ jobs:
           chmod +x scripts/create-secrets.sh
 
       - name: Run the shell script
-        working-directory: ~/manifests
+        working-directory: manifests
         run: |
           source scripts/create-secrets.sh
 
