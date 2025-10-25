@@ -75,6 +75,53 @@ jobs:
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
           kubectl version --client
+      - name: Install the helm
+        run: |
+         curl -LO https://get.helm.sh/helm-v3.18.6-linux-amd64.tar.gz
+         sudo mv linux-amd64/helm /usr/local/bin/helm
+         helm version
+
+      - name: create the Deployment and Service files
+        run: |
+          export GITOPS_BRANCH=${{secrets.GITOPS_BRANCH}}
+          export GITOPS_REPO=${{secrets.GITOPS_REPO}}
+          export TOKEN=${{secrets.TOKEN}}
+          export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
+
+          sudo apt-get update && sudo apt-get install -y git
+          mkdir -p ~/manifests
+          git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MANIFEST_REPO.git  ~/manifests
+
+          helm template short  services/url-analytics   --values services/url-analytics/values.staging.yml > analytics.yaml
+          helm template short  services/url-data-collector   --values services/url-data-collector/values.staging.yml > data-collector.yaml
+          helm template short  services/url-http-server   --values services/url-http-server/values.staging.yml > http-server.yaml
+          helm template short  services/url-converter   --values services/url-converter/values.staging.yml > converter.yaml
+          helm template short  services/url-ws-server   --values services/url-ws-server/values.staging.yml > ws.yaml
+          helm template short  services/url-web   --values services/url-web/values.staging.yml > web.yaml
+
+        
+      - name: Commit and Push Changes
+        run: |
+          export GITOPS_BRANCH=${{secrets.GITOPS_BRANCH}}
+          export GITOPS_REPO=${{secrets.GITOPS_REPO}}
+          export TOKEN=${{secrets.TOKEN}}
+          export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
+          cd ~/manifests
+          git checkout $GITOPS_BRANCH
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@example.com"
+          git add -u
+          git add --renormalize .
+          git add .
+          if git diff-index --quiet HEAD --; then
+          echo "No changes to commit"
+          else
+          git commit -m "Update images to SHA ${COMMIT_SHA}"
+
+          git push https://x-access-token:$TOKEN@github.com/$DOCKER_USERNAME/$GITOPS_REPO.git $GITOPS_BRANCH
+
+          fi
+
 
       - name: Azure login (OIDC)
         uses: azure/login@v1
