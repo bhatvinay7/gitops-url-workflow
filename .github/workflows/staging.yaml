@@ -90,7 +90,6 @@ jobs:
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
 
           sudo apt-get update && sudo apt-get install -y git
-          mkdir -p ~/manifests
           git clone --branch $BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$MANIFEST_REPO.git  ~/manifests
           cd ~/manifests
           helm template short  services/url-analytics   --values services/url-analytics/values.staging.yml > analytics.yaml
