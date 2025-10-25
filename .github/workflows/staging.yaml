@@ -92,15 +92,24 @@ jobs:
           sudo apt-get update && sudo apt-get install -y git
           mkdir -p ~/manifests
           git clone --branch $GITOPS_BRANCH https://$TOKEN@github.com/$DOCKER_USERNAME/$GITOPS_REPO.git  ~/manifests
+
+      - name: create  shell script to create the deployment.yaml
+        run: |
+          mkdir -p scripts
+          touch scripts/create-secrets.sh
+          cat <<'EOF'> scripts/create-secrets.sh
+          set -e
           cd ~/manifests
-          helm version
           helm template short  services/url-analytics   --values services/url-analytics/values.staging.yml > analytics.yaml
           helm template short  services/url-data-collector   --values services/url-data-collector/values.staging.yml > data-collector.yaml
           helm template short  services/url-http-server   --values services/url-http-server/values.staging.yml > http-server.yaml
           helm template short  services/url-converter   --values services/url-converter/values.staging.yml > converter.yaml
           helm template short  services/url-ws-server   --values services/url-ws-server/values.staging.yml > ws.yaml
           helm template short  services/url-web   --values services/url-web/values.staging.yml > ~/manifestsweb.yaml
-
+          EOF
+      - name: Run the shell script
+        run: |
+          source scripts/create-secrets.sh
         
       - name: Commit and Push Changes
         run: |
@@ -108,6 +117,7 @@ jobs:
           export GITOPS_REPO=${{secrets.GITOPS_REPO}}
           export TOKEN=${{secrets.TOKEN}}
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
+          
           cd ~/manifests
           git checkout $GITOPS_BRANCH
           git config user.name "ci-bot"
