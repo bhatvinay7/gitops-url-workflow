@@ -99,6 +99,7 @@ jobs:
           touch scripts/create-secrets.sh
           cat <<'EOF'> scripts/create-secrets.sh
           set -e
+          cd ~/manifests
           helm template short  services/url-analytics   --values services/url-analytics/values.staging.yml > analytics.yaml
           helm template short  services/url-data-collector   --values services/url-data-collector/values.staging.yml > data-collector.yaml
           helm template short  services/url-http-server   --values services/url-http-server/values.staging.yml > http-server.yaml
@@ -109,7 +110,6 @@ jobs:
           chmod +x scripts/create-secrets.sh
 
       - name: Run the shell script
-        working-directory: manifests
         run: |
           source scripts/create-secrets.sh
 
