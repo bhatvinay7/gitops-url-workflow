@@ -99,25 +99,27 @@ jobs:
           touch scripts/create-secrets.sh
           cat <<'EOF'> scripts/create-secrets.sh
           set -e
-          cd ~/manifests/services
-          helm template short  url-analytics   --values url-analytics/values.staging.yml > ../analytics.yaml
-          helm template short  url-data-collector   --values url-data-collector/values.staging.yml > ../data-collector.yaml
-          helm template short  url-http-server   --values url-http-server/values.staging.yml > ../http-server.yaml
-          helm template short  url-converter   --values url-converter/values.staging.yml > ../converter.yaml
-          helm template short  url-ws-server   --values url-ws-server/values.staging.yml > ../ws.yaml
-          helm template short  url-web   --values url-web/values.staging.yml > ../web.yaml
+          helm template short  services/url-analytics   --values services/url-analytics/values.staging.yml > analytics.yaml
+          helm template short  services/url-data-collector   --values services/url-data-collector/values.staging.yml > data-collector.yaml
+          helm template short  services/url-http-server   --values services/url-http-server/values.staging.yml > http-server.yaml
+          helm template short  services/url-converter   --values services/url-converter/values.staging.yml > converter.yaml
+          helm template short  services/url-ws-server   --values services/url-ws-server/values.staging.yml > ws.yaml
+          helm template short  services/url-web   --values services/url-web/values.staging.yml > web.yaml
           EOF
+          chmod +x scripts/create-secrets.sh
+
       - name: Run the shell script
+        working-directory: ~/manifests
         run: |
           source scripts/create-secrets.sh
-        
+
       - name: Commit and Push Changes
         run: |
           export GITOPS_BRANCH=${{secrets.GITOPS_BRANCH}}
           export GITOPS_REPO=${{secrets.GITOPS_REPO}}
           export TOKEN=${{secrets.TOKEN}}
           export DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}
-          
+
           cd ~/manifests
           git checkout $GITOPS_BRANCH
           git config user.name "ci-bot"
